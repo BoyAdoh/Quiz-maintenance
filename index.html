@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Maintenance Industrielle</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    .answers {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .answers button {
+      background-color: #e7e7e7;
+      border: none;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .answers button:hover {
+      background-color: #d0d0d0;
+    }
+
+    .answers button.correct {
+      background-color: #c8f7c5;
+    }
+
+    .answers button.wrong {
+      background-color: #f7c5c5;
+    }
+
+    #next {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      margin-top: 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      float: right;
+    }
+
+    #next:hover {
+      background-color: #45a049;
+    }
+
+    #result {
+      font-size: 1.3em;
+      text-align: center;
+      margin-top: 20px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-container">
+  <h1>Quiz Maintenance Industrielle</h1>
+  <div class="question" id="question"></div>
+  <div class="answers" id="answers"></div>
+  <button id="next">Suivant</button>
+  <div id="result"></div>
+</div>
+
+<script>
+  const quiz = [
+    {
+      question: "Quel est le rôle principal de la maintenance préventive ?",
+      answers: ["Réparer après panne", "Remplacer uniquement les pièces usées", "Éviter les pannes avant qu'elles ne surviennent", "Améliorer le design de la machine"],
+      correct: 2
+    },
+    {
+      question: "Que signifie le sigle GMAO ?",
+      answers: ["Gestion des Machines et Ateliers", "Gestion de la Maintenance Assistée par Ordinateur", "Grande Maintenance des Appareils Opérationnels", "Gestion Mécanique Automatisée et Optimisée"],
+      correct: 1
+    },
+    {
+      question: "Quelle est l’unité de mesure standard de la puissance électrique ?",
+      answers: ["Watt", "Volt", "Ampère", "Ohm"],
+      correct: 0
+    },
+    {
+      question: "Quelle méthode est utilisée pour analyser les causes profondes d’un problème ?",
+      answers: ["Méthode 5 pourquoi", "Analyse SWOT", "PDCA", "Méthode ABC"],
+      correct: 0
+    },
+    {
+      question: "Quel est l’objectif du plan de maintenance ?",
+      answers: ["Augmenter la charge des machines", "Réduire les arrêts non planifiés", "Réparer plus rapidement", "Diminuer les coûts de production"],
+      correct: 1
+    },
+    {
+      question: "Quel instrument permet de mesurer l’intensité d’un courant électrique ?",
+      answers: ["Voltmètre", "Ampèremètre", "Ohmmètre", "Thermomètre"],
+      correct: 1
+    },
+    {
+      question: "Que signifie TPM (Total Productive Maintenance) ?",
+      answers: ["Technique de Production Mécanique", "Traitement Préventif de Maintenance", "Maintenance Productive Totale", "Test de Performance Machine"],
+      correct: 2
+    },
+    {
+      question: "Quelle pièce tourne dans un moteur électrique ?",
+      answers: ["Stator", "Condensateur", "Rotor", "Transformateur"],
+      correct: 2
+    },
+    {
+      question: "Comment s'appelle le document qui décrit toutes les interventions à faire ?",
+      answers: ["Plan de charge", "Planning préventif", "Ordre de travail", "Fiche de stock"],
+      correct: 2
+    },
+    {
+      question: "Que signifie l'acronyme MTTR en maintenance ?",
+      answers: ["Maximum Time To Repair", "Mean Time To Repair", "Monthly Test Total Repair", "Maintenance Test Tool Record"],
+      correct: 1
+    }
+  ];
+
+  const questionEl = document.getElementById('question');
+  const answersEl = document.getElementById('answers');
+  const nextBtn = document.getElementById('next');
+  const resultEl = document.getElementById('result');
+
+  let currentQuestion = 0;
+  let score = 0;
+
+  function showQuestion() {
+    const q = quiz[currentQuestion];
+    questionEl.textContent = q.question;
+    answersEl.innerHTML = "";
+    q.answers.forEach((answer, i) => {
+      const btn = document.createElement("button");
+      btn.textContent = answer;
+      btn.addEventListener("click", () => selectAnswer(btn, i === q.correct));
+      answersEl.appendChild(btn);
+    });
+    nextBtn.style.display = "none";
+    resultEl.textContent = "";
+  }
+
+  function selectAnswer(button, isCorrect) {
+    const allButtons = answersEl.querySelectorAll("button");
+    allButtons.forEach(btn => btn.disabled = true);
+
+    if (isCorrect) {
+      button.classList.add("correct");
+      score++;
+    } else {
+      button.classList.add("wrong");
+      allButtons[quiz[currentQuestion].correct].classList.add("correct");
+    }
+
+    nextBtn.style.display = "inline-block";
+  }
+
+  nextBtn.addEventListener("click", () => {
+    currentQuestion++;
+    if (currentQuestion < quiz.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  });
+
+  function showResult() {
+    questionEl.textContent = "Quiz terminé !";
+    answersEl.innerHTML = "";
+    nextBtn.style.display = "none";
+    resultEl.textContent = `Tu as obtenu ${score} / ${quiz.length}`;
+  }
+
+  showQuestion();
+</script>
+
+</body>
+</html>
